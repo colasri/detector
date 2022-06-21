@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Object detection</title>
+</head>
+<body style="background: rgb(252, 250, 250); text-align:center">
+    <h1 style="text-align:center">Online object detection</h1>
+
+    <form method="post">
+        <label for="title">Picture URL</label>
+        <br>
+        <input
+            type="text"
+            name="url"
+            placeholder="enter url here">
+        </input>
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+    <br>
+    {% if error %}
+        <font color="red">{{error}}</font>
+        <br>
+    {% endif %}
+<br>
+
+    <a href="{{ url_for('static', filename='out.jpg') }}" target="_blank" rel="noopener noreferrer">
+        <img src="{{ url_for('static', filename='out.jpg') }}" alt="Current image" width="800">
+    </a>
+    <br>
+    Object detection for <a href="{{url}}">{{url}}</a>.
+    {% if not counts.empty %}
+        <br>
+        <div align="center">
+            <link rel="stylesheet" type="text/css" href="df_style.css"/>
+            {{ counts|safe }}
+        </div>
+    {% endif %}
+    <br>
+    <br>
+    TLDNR: Object detection with computer vision.
+    <br>
+    <br>
+    Detail:
+    <ul>
+        <li>Fetch an image from provided URL.
+        <li>Object detection using DETR - DEtection TRansformer (facebook/detr-resnet-50) via huggingface and pytorch.</li>
+        <li>Web page generated with flask.</li>
+        <li>Web page hosted in a container, where???</li>
+        <li>Source code: my gitlab.</li>
+    </ul>
+
+</body>
+</html>
