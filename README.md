@@ -1,3 +1,5 @@
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/d07dcb3a023c406880e15652d4b2f256)](https://www.codacy.com/gl/colasri/detector/dashboard?utm_source=gitlab.com&amp;utm_medium=referral&amp;utm_content=colasri/detector&amp;utm_campaign=Badge_Grade)
+
 # Detect
 
 Object detection running on a webpage
