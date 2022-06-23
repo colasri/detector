@@ -17,15 +17,16 @@ export FLASK_ENV=development
 flask run
 ```
 
-## Run Steamlit
+## Run Streamlit
 
-The steamlit version: `sapp.py`.
+The streamlit version: `sapp.py`.
 
 ```shell
 streamlit run sapp.py
 ```
 
-Setting up environment (for detection, segmentation, 
+Setting up environment (for detection, segmentation, web apps, jupyter):
+
 ```shell
 # conda deactivate
 # conda env remove -n stream
