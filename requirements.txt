@@ -3,7 +3,7 @@ pandas
 torch
 transformers
 opencv-python
-flask
+# flask
 pillow
 timm
 scipy
