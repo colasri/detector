@@ -24,7 +24,6 @@ def draw_bbox(img, bboxes, labels, confidences, colors=None, write_conf=False):
         colors: An array of colours the length of the number of targets(80)
         write_conf: An option to write the confidences to the image
     """
-
     global COLORS
     global classes
 

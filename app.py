@@ -1,4 +1,4 @@
-from flask import Flask, escape, request, render_template, url_for, redirect
+from flask import Flask, escape, request, render_template
 
 from detect import detector, get_opencv_img_from_url
 from cv2 import imwrite
@@ -14,8 +14,6 @@ def index():
     if request.method == 'POST':
         try:
             url = escape(request.form['url'])
-
-            # url = escape('https://i.redd.it/9eh6phbzw2t31.jpg')
             image = get_opencv_img_from_url(url)
             result = detector(image)
             counts = result['counts'].to_frame('counts').to_html(justify='center', classes='mystyle')

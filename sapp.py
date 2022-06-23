@@ -1,6 +1,5 @@
 import streamlit as st
 from detect import detector
-from cv2 import imwrite
 from PIL import Image
 import requests
 import numpy as np
