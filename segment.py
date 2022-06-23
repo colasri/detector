@@ -52,16 +52,13 @@ def segmentor(image, threshold=0.85):
     # Plot all the remaining masks
     ncols = 5
     nrows = max(2, math.ceil(keep.sum().item() / ncols))
-    print('nrows', nrows)
     figures['heatmaps'], axs = plt.subplots(ncols=ncols, nrows=nrows, figsize=(18, 10))
-    print('type(axs)', type(axs))
     for line in axs:
-        print('type(line)', type(line))
         for a in line:
             a.axis('off')
     for i, mask in enumerate(out["pred_masks"][keep]):
         ax = axs[i // ncols, i % ncols]
-        ax.imshow(mask, cmap="cividis")
+        ax.imshow(mask.detach(), cmap="cividis")
         ax.axis('off')
     figures['heatmaps'].tight_layout()
 
