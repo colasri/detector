@@ -1,7 +1,6 @@
-# From
+# Inspired from
 #     https://github.com/facebookresearch/detr
 #     https://colab.research.google.com/github/facebookresearch/detr/blob/colab/notebooks/DETR_panoptic.ipynb#scrollTo=0Ys8lZhFCwXe
-
 
 from PIL import Image
 import requests
@@ -11,8 +10,8 @@ import matplotlib.pyplot as plt
 
 import torch
 import torchvision.transforms as T
-import numpy
 torch.set_grad_enabled(False);
+import numpy as np
 
 from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog
@@ -71,14 +70,14 @@ palette = itertools.cycle(sns.color_palette())
 
 # The segmentation is stored in a special-format png
 panoptic_seg = Image.open(io.BytesIO(result['png_string']))
-panoptic_seg = numpy.array(panoptic_seg, dtype=numpy.uint8).copy()
+panoptic_seg = np.array(panoptic_seg, dtype=np.uint8).copy()
 # We retrieve the ids corresponding to each mask
 panoptic_seg_id = rgb2id(panoptic_seg)
 
 # Finally we color each mask individually
 panoptic_seg[:, :, :] = 0
 for psid in range(panoptic_seg_id.max() + 1):
-    panoptic_seg[panoptic_seg_id == psid] = numpy.asarray(next(palette)) * 255
+    panoptic_seg[panoptic_seg_id == psid] = np.asarray(next(palette)) * 255
 plt.figure(figsize=(15,15))
 plt.imshow(panoptic_seg)
 plt.axis('off')
@@ -89,7 +88,7 @@ segments_info = deepcopy(result["segments_info"])
 panoptic_seg = Image.open(io.BytesIO(result['png_string']))
 final_w, final_h = panoptic_seg.size
 # We convert the png into an segment id map
-panoptic_seg = numpy.array(panoptic_seg, dtype=numpy.uint8)
+panoptic_seg = np.array(panoptic_seg, dtype=np.uint8)
 panoptic_seg = torch.from_numpy(rgb2id(panoptic_seg))
 
 # Detectron2 uses a different numbering of coco classes, here we convert the class ids accordingly
@@ -99,7 +98,7 @@ for sInfo in segments_info:
     sInfo["category_id"] = meta.thing_dataset_id_to_contiguous_id[c] if sInfo["isthing"] else meta.stuff_dataset_id_to_contiguous_id[c]
 
 # Finally we visualize the prediction
-v = Visualizer(numpy.array(im.copy().resize((final_w, final_h)))[:, :, ::-1], meta, scale=1.0)
+v = Visualizer(np.array(im.copy().resize((final_w, final_h)))[:, :, ::-1], meta, scale=1.0)
 v._default_font_size = 15
 v = v.draw_panoptic_seg_predictions(panoptic_seg, segments_info, area_threshold=0)
 plt.figure(figsize=(15,15))
