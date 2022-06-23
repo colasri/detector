@@ -24,3 +24,13 @@ The steamlit version: `sapp.py`.
 ```shell
 streamlit run sapp.py
 ```
+
+Setting up environment (for detection, segmentation, 
+```shell
+# conda deactivate
+# conda env remove -n stream
+conda create -n stream python=3 -y
+conda activate stream
+pip install -r requirements.txt
+pip install git+https://github.com/cocodataset/panopticapi.git git+https://github.com/facebookresearch/detectron2.git
+```
