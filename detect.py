@@ -1,4 +1,3 @@
-import urllib.request
 import cv2
 import numpy as np
 from transformers import DetrFeatureExtractor, DetrForObjectDetection
@@ -79,19 +78,17 @@ def detector(image, threshold=0.8):
     print(counts)
     return {'image': out, 'counts': counts}
 
-# Next couple functions credit: https://stackoverflow.com/a/55360543/6352677
-def get_opencv_img_from_buffer(buffer, flags=cv2.IMREAD_COLOR):
-    bytes_as_np_array = np.frombuffer(buffer.read(), dtype=np.uint8)
-    return cv2.imdecode(bytes_as_np_array, flags)
-
-def get_opencv_img_from_url(url, flags=cv2.IMREAD_COLOR):
-    req = urllib.request.Request(url)
-    return get_opencv_img_from_buffer(urllib.request.urlopen(req), flags)
-
 
 if __name__ == "__main__":
+    from PIL import Image
+    import requests
     url = 'https://i.imgur.com/XYmCOL5.jpg'
-    image = get_opencv_img_from_url(url)
+    image =  np.asarray(Image.open(requests.get(url, stream=True).raw))
     result = detector(image, threshold=0.5)
     print(result['counts'])
-    cv2.imwrite('output.jpg',  result['image'])
+
+    import matplotlib.pyplot as plt
+    plt.figure(figsize=(15,15))
+    plt.imshow(result['image'])
+    plt.axis('off')
+    plt.show()
