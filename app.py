@@ -1,7 +1,10 @@
 from flask import Flask, escape, request, render_template
 
-from detect import detector, get_opencv_img_from_url
+from detect import detector
 from cv2 import imwrite
+from PIL import Image
+import requests
+import numpy as np
 
 app = Flask(__name__)
 
@@ -14,7 +17,7 @@ def index():
     if request.method == 'POST':
         try:
             url = escape(request.form['url'])
-            image = get_opencv_img_from_url(url)
+            image =  np.asarray(Image.open(requests.get(url, stream=True).raw))
             result = detector(image)
             counts = result['counts'].to_frame('counts').to_html(justify='center', classes='mystyle')
             imwrite('./static/out.jpg', result['image'])
