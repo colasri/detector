@@ -10,3 +10,5 @@ scipy
 seaborn
 jupyter
 streamlit
+git+https://github.com/cocodataset/panopticapi.git
+# git+https://github.com/colasri/detectron2.git

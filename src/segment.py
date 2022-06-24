@@ -13,7 +13,17 @@ import torchvision.transforms as T
 torch.set_grad_enabled(False);
 import numpy as np
 
-from detectron2.utils.visualizer import Visualizer
+try:
+    from detectron2.utils.visualizer import Visualizer
+except ModuleNotFoundError:
+    '''Dirty workaround to install detectron2 on streamlit server, since detectron2 requires pytorch
+    and it does not work in a single "pip install -r requirements.txt" call. And I can't call
+    another "pip install" while setting up the app, this is automated.
+    '''
+    import subprocess
+    import sys
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'git+https://github.com/facebookresearch/detectron2.git'])
+    from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog
 
 from panopticapi.utils import rgb2id
