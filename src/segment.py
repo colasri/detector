@@ -22,7 +22,7 @@ except ModuleNotFoundError:
     '''
     import subprocess
     import sys
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'git+https://github.com/facebookresearch/detectron2.git'])
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'git+https://github.com/colasri/detectron2.git'])
     from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog
 
@@ -111,7 +111,7 @@ def segmentor(image, threshold=0.85):
     # Finally we visualize the prediction
     v = Visualizer(np.array(image.copy().resize((final_w, final_h)))[:, :, ::-1], meta, scale=1.0)
     v._default_font_size = 15
-    v = v.draw_panoptic_seg_predictions(panoptic_seg, segments_info, area_threshold=0)
+    v = v.draw_panoptic_seg(panoptic_seg, segments_info, area_threshold=0)
     figures['segment 2'] = plt.figure(figsize=(15,15))
     plt.imshow(v.get_image())
     plt.axis('off')
