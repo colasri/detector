@@ -2,6 +2,8 @@
 #     https://github.com/facebookresearch/detr
 #     https://colab.research.google.com/github/facebookresearch/detr/blob/colab/notebooks/DETR_panoptic.ipynb#scrollTo=0Ys8lZhFCwXe
 
+USE_DETECTRON2 = False
+
 from PIL import Image
 import requests
 import io
@@ -13,18 +15,19 @@ import torchvision.transforms as T
 torch.set_grad_enabled(False);
 import numpy as np
 
-try:
-    from detectron2.utils.visualizer import Visualizer
-except ModuleNotFoundError:
-    '''Dirty workaround to install detectron2 on streamlit server, since detectron2 requires pytorch
-    and it does not work in a single "pip install -r requirements.txt" call. And I can't call
-    another "pip install" while setting up the app, this is automated.
-    '''
-    import subprocess
-    import sys
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'git+https://github.com/colasri/detectron2.git'])
-    from detectron2.utils.visualizer import Visualizer
-from detectron2.data import MetadataCatalog
+if USE_DETECTRON2:
+    try:
+        from detectron2.utils.visualizer import Visualizer
+    except ModuleNotFoundError:
+        '''Dirty workaround to install detectron2 on streamlit server, since detectron2 requires pytorch
+        and it does not work in a single "pip install -r requirements.txt" call. And I can't call
+        another "pip install" while setting up the app, this is automated.
+        '''
+        import subprocess
+        import sys
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'git+https://github.com/colasri/detectron2.git'])
+        from detectron2.utils.visualizer import Visualizer
+    from detectron2.data import MetadataCatalog
 
 from panopticapi.utils import rgb2id
 
@@ -93,35 +96,36 @@ def segmentor(image, threshold=0.85):
     plt.axis('off')
 
 
-    # We extract the segments info and the panoptic result from DETR's prediction
-    segments_info = deepcopy(result["segments_info"])
-    # Panoptic predictions are stored in a special format png
-    panoptic_seg = Image.open(io.BytesIO(result['png_string']))
-    final_w, final_h = panoptic_seg.size
-    # We convert the png into an segment id map
-    panoptic_seg = np.array(panoptic_seg, dtype=np.uint8)
-    panoptic_seg = torch.from_numpy(rgb2id(panoptic_seg))
+    if USE_DETECTRON2:
+        # We extract the segments info and the panoptic result from DETR's prediction
+        segments_info = deepcopy(result["segments_info"])
+        # Panoptic predictions are stored in a special format png
+        panoptic_seg = Image.open(io.BytesIO(result['png_string']))
+        final_w, final_h = panoptic_seg.size
+        # We convert the png into an segment id map
+        panoptic_seg = np.array(panoptic_seg, dtype=np.uint8)
+        panoptic_seg = torch.from_numpy(rgb2id(panoptic_seg))
 
-    # Detectron2 uses a different numbering of coco classes, here we convert the class ids accordingly
-    meta = MetadataCatalog.get("coco_2017_val_panoptic_separated")
-    for sInfo in segments_info:
-        c = sInfo["category_id"]
-        sInfo["category_id"] = meta.thing_dataset_id_to_contiguous_id[c] if sInfo["isthing"] else meta.stuff_dataset_id_to_contiguous_id[c]
+        # Detectron2 uses a different numbering of coco classes, here we convert the class ids accordingly
+        meta = MetadataCatalog.get("coco_2017_val_panoptic_separated")
+        for sInfo in segments_info:
+            c = sInfo["category_id"]
+            sInfo["category_id"] = meta.thing_dataset_id_to_contiguous_id[c] if sInfo["isthing"] else meta.stuff_dataset_id_to_contiguous_id[c]
 
-    # Finally we visualize the prediction
-    v = Visualizer(np.array(image.copy().resize((final_w, final_h)))[:, :, ::-1], meta, scale=1.0)
-    v._default_font_size = 15
-    v = v.draw_panoptic_seg(panoptic_seg, segments_info, area_threshold=0)
-    figures['segment 2'] = plt.figure(figsize=(15,15))
-    plt.imshow(v.get_image())
-    plt.axis('off')
+        # Finally we visualize the prediction
+        v = Visualizer(np.array(image.copy().resize((final_w, final_h)))[:, :, ::-1], meta, scale=1.0)
+        v._default_font_size = 15
+        v = v.draw_panoptic_seg(panoptic_seg, segments_info, area_threshold=0)
+        figures['segment 2'] = plt.figure(figsize=(15,15))
+        plt.imshow(v.get_image())
+        plt.axis('off')
 
     return figures
 
 if __name__ == "__main__":
     # url = 'https://i.imgur.com/XYmCOL5.jpg'
-    # url = 'https://i.redd.it/9eh6phbzw2t31.jpg'
-    url = 'https://upload.wikimedia.org/wikipedia/commons/4/41/Siberischer_tiger_de_edit02.jpg'
+    url = 'https://i.redd.it/9eh6phbzw2t31.jpg'
+    # url = 'https://upload.wikimedia.org/wikipedia/commons/4/41/Siberischer_tiger_de_edit02.jpg'
     image =  Image.open(requests.get(url, stream=True).raw)
     result = segmentor(image, threshold=0.85)
 
