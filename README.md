@@ -21,10 +21,10 @@ flask run
 
 ## Run Streamlit
 
-The streamlit version: `sapp.py`.
+The streamlit version: `home_page.py`.
 
 ```shell
-streamlit run sapp.py
+streamlit run home_page.py
 ```
 
 Setting up environment (for detection, segmentation, web apps, jupyter):
@@ -41,8 +41,12 @@ pip install git+https://github.com/cocodataset/panopticapi.git git+https://githu
 ## Docker
 
 ```shell
-time docker build -t ddock .
+time docker build -f Dockerfile -t ddock .
 docker run -p 8501:8501 ddock
+```
+
+If can't ctrl+C to kill docker
+```shell
 docker ps
 docker stop $CID
 ```
