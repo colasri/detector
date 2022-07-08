@@ -2,13 +2,15 @@ numpy
 pandas
 torch
 transformers
-opencv-python
+# opencv-python
+opencv-python-headless
 # flask
 pillow
 timm
 scipy
 seaborn
-jupyter
+# jupyter
 streamlit
 git+https://github.com/cocodataset/panopticapi.git
 # git+https://github.com/colasri/detectron2.git
+watchdog

@@ -73,7 +73,7 @@ def detector(image, threshold=0.8):
     confidences = torch.amax(probas[keep], dim=1)
     out = draw_bbox(image, bboxes_scaled[keep], labels[keep], confidences, colors=None, write_conf=True)
     # release resources
-    cv2.destroyAllWindows()
+    # cv2.destroyAllWindows()
 
     print(counts)
     return {'image': out, 'counts': counts}

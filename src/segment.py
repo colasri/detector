@@ -2,7 +2,7 @@
 #     https://github.com/facebookresearch/detr
 #     https://colab.research.google.com/github/facebookresearch/detr/blob/colab/notebooks/DETR_panoptic.ipynb#scrollTo=0Ys8lZhFCwXe
 
-USE_DETECTRON2 = False
+USE_DETECTRON2 = True
 
 from PIL import Image
 import requests
@@ -128,6 +128,16 @@ if __name__ == "__main__":
     # url = 'https://upload.wikimedia.org/wikipedia/commons/4/41/Siberischer_tiger_de_edit02.jpg'
     image =  Image.open(requests.get(url, stream=True).raw)
     result = segmentor(image, threshold=0.85)
+
+    # import cv2
+    # import requests
+    # import numpy as np
+
+    # # Fetch JPEG data
+    # d = requests.get('http://images.cocodataset.org/train2017/000000000086.jpg')
+
+    # # Decode in-memory, compressed JPEG into Numpy array
+    # im = cv2.imdecode(np.frombuffer(d.content,np.uint8), cv2.IMREAD_COLOR)
 
     for key, fig in result.items():
         print(f'Figure {key}')

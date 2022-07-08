@@ -37,3 +37,12 @@ conda activate stream
 pip install -r requirements.txt
 pip install git+https://github.com/cocodataset/panopticapi.git git+https://github.com/facebookresearch/detectron2.git
 ```
+
+## Docker
+
+```shell
+time docker build -t ddock .
+docker run -p 8501:8501 ddock
+docker ps
+docker stop $CID
+```
