@@ -3,9 +3,10 @@ import numpy as np
 from transformers import DetrFeatureExtractor, DetrForObjectDetection
 import pandas as pd
 import torch
+import streamlit as st
 
 classes = None
-np.random.seed(1)
+np.random.seed(2)
 COLORS = np.random.uniform(0, 255, size=(80, 3))
 
 def populate_class_labels():
@@ -45,7 +46,11 @@ def draw_bbox(img, bboxes, labels, confidences, colors=None, write_conf=False):
 
     return img
 
-def detector(image, threshold=0.8):
+@st.cache(
+    hash_funcs={torch.nn.parameter.Parameter: lambda parameter: parameter.data.numpy()},
+    allow_output_mutation=True,
+    show_spinner=False)
+def detector(image):
     # apply object detection
     feature_extractor = DetrFeatureExtractor.from_pretrained('facebook/detr-resnet-50')
     model = DetrForObjectDetection.from_pretrained('facebook/detr-resnet-50')
@@ -53,8 +58,11 @@ def detector(image, threshold=0.8):
     inputs = feature_extractor(images=image, return_tensors="pt")
     outputs = model(**inputs)
 
+    return (feature_extractor, model, outputs)
+
+def draw_detection(image, extractor, model, detection_result, threshold=0.8):
     # keep only predictions of queries with enough confidence (excluding no-object class)
-    probas = outputs.logits.softmax(-1)[0, :, :-1]
+    probas = detection_result.logits.softmax(-1)[0, :, :-1]
     # keep only the 'person' class
     labels = np.array([model.config.id2label[p.argmax().item()] for p in probas])
     keep = (probas.max(-1).values > threshold)
@@ -67,13 +75,11 @@ def detector(image, threshold=0.8):
     # rescale bounding boxes
     target_sizes = torch.tensor([image.shape[0], image.shape[1]]).unsqueeze(0)
     print(f'Target sizes {target_sizes}')
-    postprocessed_outputs = feature_extractor.post_process(outputs, target_sizes)
+    postprocessed_outputs = extractor.post_process(detection_result, target_sizes)
     bboxes_scaled = postprocessed_outputs[0]['boxes']
 
     confidences = torch.amax(probas[keep], dim=1)
     out = draw_bbox(image, bboxes_scaled[keep], labels[keep], confidences, colors=None, write_conf=True)
-    # release resources
-    # cv2.destroyAllWindows()
 
     print(counts)
     return {'image': out, 'counts': counts}
@@ -84,7 +90,8 @@ if __name__ == "__main__":
     import requests
     url = 'https://i.imgur.com/XYmCOL5.jpg'
     image =  np.asarray(Image.open(requests.get(url, stream=True).raw))
-    result = detector(image, threshold=0.5)
+    detection = detector(image)
+    result = draw_detection(image, *detection, threshold=0.5)
     print(result['counts'])
 
     import matplotlib.pyplot as plt
