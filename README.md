@@ -2,7 +2,7 @@
 
 # Detect
 
-Object detection running on a webpage
+Object detection running on a [webpage](https://colasri-detector-home-page-c47zly.streamlitapp.com/), hosted on Streamlit Cloud.
 
 ## Run flask
 
@@ -45,7 +45,7 @@ time docker build -f Dockerfile -t ddock .
 docker run -p 8501:8501 ddock
 ```
 
-If can't ctrl+C to kill docker
+If can't ctrl+C to kill docker (fixed now, but should it come back...).
 ```shell
 docker ps
 docker stop $CID
